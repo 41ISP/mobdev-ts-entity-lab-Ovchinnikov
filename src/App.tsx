@@ -1,15 +1,18 @@
-import { EntityCard } from "./components/EntityCard"
+
 import { EntityForm } from "./components/EntityForm"
 import { useItemStore } from "./store/useItemsStore"
 import "./App.css"
 import { useEffect, useState } from "react"
+import EntityCard from "./components/EntityCard"
 
 
 
 
 export default function App() {
 
-    const {items, getGames} = useItemStore()
+
+
+    const {items, getItems: getGames} = useItemStore()
     const [error, setIsError] = useState<string | null>(null)
     const [loading, setIsLoading] = useState<boolean>(false)
 
@@ -38,7 +41,7 @@ export default function App() {
         <div className="layout">
             <header className="top">
                 <h1>Мои сущности</h1>
-                <span className="pill">Количество</span>
+                <span className="pill">Количество {items?.data.length}</span>
             </header>
 
             <aside>

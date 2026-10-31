@@ -1,5 +1,5 @@
 import axios from "axios"
-import type { IItem, IStrapiResponse } from "./types"
+import type { IItem, IStrapiResponse, TItemInput } from "./types"
 
 export const API_URL = import.meta.env.VITE_API_URL
 const API_KEY = import.meta.env.VITE_API_KEY
@@ -21,4 +21,14 @@ const getItems = async(): Promise<IStrapiResponse<IItem[]>> => {
     return res.data
 }
 
-export const api = { getItems }
+
+const createItem = async (input: TItemInput): Promise<IItem> => {
+    const res = await apiInstance.post('/Items',{data: input})
+    return res.data.data
+}
+
+const deleteItem = async (id: string): Promise<void> => {
+    await apiInstance.delete(`/Items/${id}`)
+}
+
+export const api = { getItems , createItem ,deleteItem }

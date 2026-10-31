@@ -5,13 +5,13 @@ import type { IItem, IStrapiResponse } from "../types";
 
 interface IItemStore {
     items: IStrapiResponse<IItem[]> | undefined,
-    getGames: () => void,
+    getItems: () => void,
 
 }
 
 export const useItemStore = create<IItemStore>((set) => ({
      items: undefined,
-     getGames: async () => {
+     getItems: async () => {
         try {
             const res = await api.getItems()
             set({ items : res })

@@ -19,6 +19,9 @@ export interface IItem {
   imgItem: ImgItem
 }
 
+export type TItemInput = Omit<IItem, 'id' | 'documentId' | 'imgItem' | 'createdAt'| 'updatedAt'| 'publishedAt'>
+
+
 export interface ImgItem {
   id: number
   documentId: string

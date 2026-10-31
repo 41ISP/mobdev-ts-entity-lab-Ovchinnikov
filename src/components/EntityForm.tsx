@@ -1,63 +1,131 @@
+import React, { useState } from "react";
+import { api } from "../api";
+
+import type { TItemInput } from "../types";
+import { useItemStore } from "../store/useItemsStore";
+
+// Начальные значения формы, соответствующие полям TItemInput
+const initialForm: TItemInput = {
+    name: '',
+    description: '',
+    price: 0,
+    QUANTITY: 0,
+    sku: '',
+    creationDate: new Date().toISOString().slice(0, 10),
+};
+
 export function EntityForm() {
+    const [form, setForm] = useState<TItemInput>(initialForm);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const { getItems} = useItemStore();
+
+    
+    const onChange = <K extends keyof TItemInput>(key: K, value: TItemInput[K]) => {
+        setForm((o) => ({ ...o, [key]: value }));
+    };
+
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            setIsLoading(true);
+            
+            await api.createItem(form); 
+            getItems();
+          
+            setForm(initialForm);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
-        <form className="form">
-            <h2>Добавить сущность</h2>
+        <form onSubmit={onSubmit} className="form">
+            <h2>Добавить товар</h2>
 
             <label className="field">
-                Строка
-                <input type="text" required />
+                Название
+                <input 
+                    onChange={(e) => onChange('name', e.target.value)} 
+                    type="text" 
+                    name="name" 
+                    value={form.name} 
+                    required 
+                />
             </label>
 
             <label className="field">
-                Длинный текст
-                <textarea rows={3} />
+                Описание
+                <textarea 
+                    rows={3} 
+                    onChange={(e) => onChange('description', e.target.value)} 
+                    name="description" 
+                    value={form.description}
+                />
             </label>
 
-            <label className="field">
-                Целое число
-                <input type="number" min={0} step={1} />
-            </label>
-
-            <label className="field">
-                Число с плавающией точкой
-                <input type="number" min={0} step={0.01} />
-            </label>
-
-            <label className="field">
-                <span>Диапазон</span>
-                <input type="range" min={0} max={10} step={0.5} />
-            </label>
-
-            <label className="field">
-                Дата
-                <input type="date" required />
-            </label>
-
-            <label className="field">
-                Выпадающий список
-                <select>
-                    <option>Вариант 1</option>
-                </select>
-            </label>
-
-            <fieldset>
-                <legend>Группа чекбоксов</legend>
-                <label className="check">
-                    <input type="checkbox" />
-                    Чекбокс 1
+            <div className="row">
+                <label className="field">
+                    Цена, ₽
+                    <input 
+                        onChange={(e) => onChange('price', Number(e.target.value))} 
+                        type="number" 
+                        name="price" 
+                        value={form.price} 
+                        min={0} 
+                        step={0.01} 
+                    />
                 </label>
-                <label className="check">
-                    <input type="checkbox" />
-                    Чекбокс 2
+                <label className="field">
+                    Количество
+                    <input 
+                        onChange={(e) => onChange('QUANTITY', Number(e.target.value))} 
+                        type="number" 
+                        name="QUANTITY" 
+                        value={form.QUANTITY} 
+                        min={0} 
+                        step={1} 
+                    />
                 </label>
-            </fieldset>
+            </div>
 
+            <div className="row">
+                <label className="field">
+                    Артикул (SKU)
+                    <input 
+                        onChange={(e) => onChange('sku', e.target.value)} 
+                        type="text" 
+                        name="sku" 
+                        value={form.sku} 
+                    />
+                </label>
+                <label className="field">
+                    Дата добавления
+                    <input 
+                        onChange={(e) => onChange('creationDate', e.target.value)} 
+                        type="date" 
+                        name="creationDate" 
+                        value={form.creationDate} 
+                        required 
+                    />
+                </label>
+            </div>
+
+    
             <label className="check">
-                <input type="checkbox" />
-                Чекбокс
+                <input 
+                    type="checkbox" 
+                    checked={form.isActive} 
+                    onChange={(e) => onChange('isActive', e.target.checked)} 
+                />
+                Активен
             </label>
+            
 
-            <button className="btn">Добавить</button>
+            <button disabled={isLoading} className="btn">
+                {isLoading ? "Сохраняем…" : "Добавить товар"}
+            </button>
         </form>
-    )
+    );
 }
